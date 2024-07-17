@@ -3,7 +3,8 @@ package com.ohgiraffers.spring_project.model.dto;
 import java.util.Date;
 
 public class BoardDTO {
-    private Integer boardNo;
+
+    private int id;
     private String boardTitle;
     private String boardContent;
     private Date createDate;
@@ -11,19 +12,19 @@ public class BoardDTO {
     public BoardDTO() {
     }
 
-    public BoardDTO(Integer boardNo, String boardTitle, String boardContent, Date createDate) {
-        this.boardNo = boardNo;
+    public BoardDTO(int id, String boardTitle, String boardContent, Date createDate) {
+        this.id = id;
         this.boardTitle = boardTitle;
         this.boardContent = boardContent;
         this.createDate = createDate;
     }
 
-    public Integer getBoardNo() {
-        return boardNo;
+    public int getId() {
+        return id;
     }
 
-    public void setBoardNo(Integer boardNo) {
-        this.boardNo = boardNo;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getBoardTitle() {
@@ -53,7 +54,7 @@ public class BoardDTO {
     @Override
     public String toString() {
         return "BoardDTO{" +
-                "boardNo=" + boardNo +
+                "id=" + id +
                 ", boardTitle='" + boardTitle + '\'' +
                 ", boardContent='" + boardContent + '\'' +
                 ", createDate=" + createDate +

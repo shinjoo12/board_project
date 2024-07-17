@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+</head>
+<body>
+
+<div class="blog-entry">
+    <form th:action="@{postlist/postpage}" method="get">
+
+    <ul>
+        <li th:each="post : ${postlist}">
+            <a th:href="@{/postlist/{id}(id=${post.id})}" th:text="${post.boardTitle}"></a>
+        </li>
+    </ul>
+
+    </form>
+</div>
+
+</body>
+</html>

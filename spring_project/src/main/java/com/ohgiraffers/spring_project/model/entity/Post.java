@@ -1,6 +1,7 @@
 package com.ohgiraffers.spring_project.model.entity;
 
 
+
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -11,7 +12,7 @@ public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer boardNo;
+    private Integer id;
 
 
     @Column(name = "board_title",unique = true, nullable = false)
@@ -27,19 +28,19 @@ public class Post {
     public Post() {
     }
 
-    public Post(Integer boardNo, String boardTitle, String boardContent, Date createDate) {
-        this.boardNo = boardNo;
+    public Post(Integer id, String boardTitle, String boardContent, Date createDate) {
+        this.id = id;
         this.boardTitle = boardTitle;
         this.boardContent = boardContent;
         this.createDate = createDate;
     }
 
-    public Integer getBoardNo() {
-        return boardNo;
+    public Integer getId() {
+        return id;
     }
 
-    public void setBoardNo(Integer boardNo) {
-        this.boardNo = boardNo;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getBoardTitle() {
@@ -69,10 +70,12 @@ public class Post {
     @Override
     public String toString() {
         return "Post{" +
-                "boardNo=" + boardNo +
+                "id=" + id +
                 ", boardTitle='" + boardTitle + '\'' +
                 ", boardContent='" + boardContent + '\'' +
                 ", createDate=" + createDate +
                 '}';
     }
+
+
 }
