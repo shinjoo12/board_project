@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BoardRepository extends JpaRepository<Post, Integer> {
+    Post findByBoardTitle(String boardTitle);
 }

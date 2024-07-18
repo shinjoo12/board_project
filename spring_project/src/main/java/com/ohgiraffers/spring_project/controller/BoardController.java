@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
-import java.util.Date;
+
+import java.util.List;
 import java.util.Optional;
 
 
@@ -21,6 +23,7 @@ import java.util.Optional;
 public class BoardController {
 
     private final BoardService boardService;
+
     @Autowired
     public BoardController(BoardService boardService) {
         this.boardService = boardService;
@@ -36,30 +39,40 @@ public class BoardController {
         return "board";
     }
 
+    // postlist 데이터가 존재하지 않으면?
     @GetMapping("/postlist")
     public String postlist(Model model) {
-        var postlist = boardService.getAllPosts();
-        model.addAttribute("postlist", postlist);
-        // postlist 데이터가 존재하지 않으면?
+        List<Post> postlist = boardService.getAllPosts();
 
+        if (postlist == null || postlist.size() < 0) {
+            model.addAttribute("noPost", true);
+        } else {
+            // 게시물 목록을 모델에 추가
+            model.addAttribute("postlist", postlist);
+        }
         return "postlist";
     }
 
-    // 수정
+
+
+
     @PostMapping("/insert")
-    public String postpage(@ModelAttribute BoardDTO boardDTO) {
-        // boardDTO의 값이 없으면 어떻게 할 것인지?
+    public String postpage(@ModelAttribute BoardDTO boardDTO, RedirectAttributes redirectAttributes) {
+        // 비즈니스 로직을 수행
+        String result = boardService.createPost(boardDTO, redirectAttributes);
 
-        // 서비스로 이동이 필요함
-        Post post = new Post();
-        post.setCreateDate(new Date());
-        post.setBoardContent(boardDTO.getBoardContent());
-        post.setBoardTitle(boardDTO.getBoardTitle());
-
-        boardService.createPost(boardDTO);
-        // 사용자가 등록이 되었는지 안되었는지 궁금함
-        return "redirect:/postlist";
+        // 게시글 등록 성공 여부에 따라 리다이렉션 처리
+        if (result == null) {
+            // 게시글 등록 실패 시
+            redirectAttributes.addFlashAttribute("message", "게시글 등록에 실패하였습니다");
+            return "redirect:/board";
+        } else {
+            //등록이 되어 있으면 success 뜨고 postlist로 뜸
+            redirectAttributes.addFlashAttribute("success", "게시글 성공적으로 등록");
+            return "redirect:/postlist";
+        }
     }
+
 
     // 수정
     @GetMapping("postlist/{id}")
@@ -102,16 +115,20 @@ public class BoardController {
         }
     }
 
+
+
+
     // 위의 사례를 보고 전체 수정
     @PostMapping("/editpost")
-    public String updatepost(@ModelAttribute BoardDTO boardDTO, Model model){
+    public String updatepost(@ModelAttribute BoardDTO boardDTO){
        // BoardDTO 객체를 사용하여 게시글 정보를 업데이트
         boardService.updatePost(boardDTO);
-        return "redirect:/postlist";
+        return "postdetail";
    }
 
 
 }
+
 
 
 
