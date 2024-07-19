@@ -7,16 +7,16 @@ import com.ohgiraffers.spring_project.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 
 import java.util.List;
-import java.util.Optional;
+
+
+
 
 
 @Controller
@@ -39,7 +39,7 @@ public class BoardController {
         return "board";
     }
 
-    // postlist 데이터가 존재하지 않으면?
+    // postlist 데이터가 존재하지 않으면?  목록리스트 데이터
     @GetMapping("/postlist")
     public String postlist(Model model) {
         List<Post> postlist = boardService.getAllPosts();
@@ -54,8 +54,7 @@ public class BoardController {
     }
 
 
-
-
+    //게시글 등록 성공 여부 확인
     @PostMapping("/insert")
     public String postpage(@ModelAttribute BoardDTO boardDTO, RedirectAttributes redirectAttributes) {
         // 비즈니스 로직을 수행
@@ -64,70 +63,85 @@ public class BoardController {
         // 게시글 등록 성공 여부에 따라 리다이렉션 처리
         if (result == null) {
             // 게시글 등록 실패 시
-            redirectAttributes.addFlashAttribute("message", "게시글 등록에 실패하였습니다");
+            redirectAttributes.addAttribute("message", "게시글 등록에 실패하였습니다");
             return "redirect:/board";
         } else {
             //등록이 되어 있으면 success 뜨고 postlist로 뜸
-            redirectAttributes.addFlashAttribute("success", "게시글 성공적으로 등록");
+            redirectAttributes.addAttribute("success", "게시글 성공적으로 등록");
             return "redirect:/postlist";
         }
     }
 
+    //postdetail로 상세페이지 보여지게 하긔
 
-    // 수정
-    @GetMapping("postlist/{id}")
-    public String getpost(@PathVariable("id") Integer id, Model model) {
-
-        Optional<Post> post = boardService.getPostById(id);
-        // 굿
+    @GetMapping("/postdetail")
+    public String postdetail(@PathVariable("id") int id, Model model) {
+        Post post = boardService.getPostById(id);
         if (post.isPresent()) {
-            // 엔티티를 전달하면 안되는 이유?
-            // 나이 이름, 주소, 전화번호, 비밀번호, 아이디, 주민번호
-
-            model.addAttribute("post", post.get());
-            return "postDetail"; // 검증이 필요함
+            model.addAttribute("post", post);
+            return "postdetail";
         } else {
-            // 페이지가 없는데?
-            model.addAttribute("error", "Post not found!");
+            model.addAttribute("error", "not found");
             return "error";
         }
     }
-
-    // 수정
-    @GetMapping("editpost/{id}")
-    public String editpost(@PathVariable("id") Integer id, Model model) {
-        //ID를 사용하여 게시글 정보를 조회
-        Optional<Post> post = boardService.getPostById(id);
-        // 게시글이 존재하는 경우
-        // 서비스에서 처리해야됨
-        if (post.isPresent()) {
-            BoardDTO boardDTO = new BoardDTO();
-            boardDTO.setId(post.get().getId()); // 게시글 ID 설정
-            boardDTO.setBoardTitle(post.get().getBoardTitle()); //제목 설정
-            boardDTO.setBoardContent(post.get().getBoardContent()); //내용 설정
-            // 모델에 BoardDTO 객체를 추가하여 뷰에서 사용하도록 함
-            model.addAttribute("boardDTO", boardDTO);
-            return "editpost";
-        } else {
-            // 에러페이지 없음
-            model.addAttribute("error", "Post not found");
-            return "error";
+//    private BoardDTO boardPage;
+//    // 게시물페이지가 null이 아닌경우 블로그 제목과 내용을 추가
+//    @GetMapping("postdetail")
+//    public String postdetail2(Model model){
+//
+//        if(boardPage != null){
+//            model.addAttribute("boardTitle", boardPage.getBoardTitle());
+//            model.addAttribute("boardContent", boardPage.getBoardContent());
+//        }
+//        return "editpost";
+//    }
+    //게시글 제목이나 내용이 없다면??
+    // 없다면 에러메시지 발생
+    @GetMapping("/postdetail/{id}")
+    public ModelAndView getPostById(@PathVariable("id") int id , ModelAndView mv){
+        BoardDTO post =boardService.find(id);
+        if(post.getBoardTitle() == null || post.getBoardTitle().isEmpty()){
+            mv.setViewName("redirect:/postlist");
+            return mv;
         }
+        if(post.getBoardContent() == null || post.getBoardContent().isEmpty()) {
+            mv.setViewName("redirect:/postlist");
+            return mv;
+        }else{
+            mv.addObject("message","완료");
+        }
+        return mv;
+
     }
 
 
 
+    @PostMapping
+    public ModelAndView getPostById(BoardDTO boardDTO , ModelAndView mv) {
+        //게시물이 등록됬을때 제목이나 내용이 없다면
+        //if 문
+        // 경고메시지
+        if (boardDTO.getBoardTitle() == null || boardDTO.getBoardTitle().isEmpty() ||
+            boardDTO.getBoardContent() == null || boardDTO.getBoardContent().isEmpty()) {
+            mv.setViewName("postdetail");
+            mv.addObject("error","게시글 제목 또는 내용이 없습니다");
+        }else{
+            mv.setViewName("postdetail");
+            mv.addObject("success","게시글 등록 성공");
+        }
+        return mv;
 
-    // 위의 사례를 보고 전체 수정
-    @PostMapping("/editpost")
-    public String updatepost(@ModelAttribute BoardDTO boardDTO){
-       // BoardDTO 객체를 사용하여 게시글 정보를 업데이트
-        boardService.updatePost(boardDTO);
-        return "postdetail";
-   }
+
+    }
 
 
 }
+
+
+
+
+
 
 
 

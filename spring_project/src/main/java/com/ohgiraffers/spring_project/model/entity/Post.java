@@ -78,4 +78,7 @@ public class Post {
     }
 
 
+    public boolean isPresent() {
+        return id != null;
+    }
 }
