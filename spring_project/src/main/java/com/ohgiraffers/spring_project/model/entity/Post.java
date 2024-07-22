@@ -12,34 +12,33 @@ public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
 
-
-    @Column(name = "board_title",unique = true, nullable = false)
+    @Column(name = "board_title", unique = true, nullable = false)
     private String boardTitle;
 
-
-    @Column(name = "board_content",nullable = false,length = 5000)
+    @Column(name = "board_content", nullable = false, length = 5000)
     private String boardContent;
 
     @Column(name = "board_createDate")
     private Date createDate;
 
+
     public Post() {
     }
 
-    public Post(Integer id, String boardTitle, String boardContent, Date createDate) {
+    public Post(int id, String boardTitle, String boardContent, Date createDate) {
         this.id = id;
         this.boardTitle = boardTitle;
         this.boardContent = boardContent;
         this.createDate = createDate;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -78,7 +77,5 @@ public class Post {
     }
 
 
-    public boolean isPresent() {
-        return id != null;
-    }
+
 }

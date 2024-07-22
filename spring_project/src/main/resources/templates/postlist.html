@@ -12,13 +12,8 @@
 </div>
 <!--//noPost 변수가 false일 때만 해당 부분 표시-->
 <div class="board-entry" th:unless="${noPost}" >
-    <form th:action="@{postlist/postpage}" method="get">
-<!--        //게시물 목록 나열-->
     <ul>
-<!--        데이터의 목록 반복   현재반복중인 게시물 객체 참조-->
         <li th:each="post : ${postlist}">
-            <!-- 'post.id'를 URL 경로에 포함시키고, 'post.boardTitle'게시물의 제목이 링크 텍스트로 표시
-             링크의 url을 동적으로 생성 post.id-> 특정게시물의 세부페이지로 연결 -->
             <a th:href="@{/postlist/{id}(id=${post.id})}" th:text="${post.boardTitle}"></a>
         </li>
     </ul>

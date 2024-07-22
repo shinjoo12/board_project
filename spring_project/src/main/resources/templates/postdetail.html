@@ -7,15 +7,14 @@
 
 </head>
 <body>
-<div class ="board_entry">
-    <form  th:action="@{/editpost}" th:object="${boardDTO}" method="post">
-        <p th:text="${post.boardTitle}">board title</p>
-        <p th:text="${post.boardContent}">board content</p>
-        <br/>
-        <button type="btn-modify">MODIFY</button>
-        <button type="btn-delete">DELETE</button>
-    </form>
-    <a href="/postlist">Back to list</a>
+<div class="board_entry">
+    <p th:text="${post.boardTitle}">board title</p>
+    <p th:text="${post.boardContent}">board content</p>
+    <br/>
+    <a th:href="@{'/postlist/editpost/' + ${post.id}}">MODIFY</a>
+    <a th:href="@{'/postlist/deletepost/'+${post.id}}">DELETE</a>
+</div>
+<a th:href="@{/postlist}">Back to list</a>
 </div>
 </body>
 </html>
