@@ -105,28 +105,32 @@ public class BoardController {
     //[수정]
     // 게시글 수정 페이지 요청 처리
     @GetMapping("/postlist/editpost/{id}")
+    //요청 URL 경로의 일부로 전달된 id 값을 메서드의 파라미터 id에 바인딩 // Model model 컨트롤러에서 뷰로 데이터를 전달하는 데 사용
     public String editPost(@PathVariable("id") int id, Model model) {
         // id에 해당하는 게시물을 BoardService를 통해 가져옴
+        //boardService 객체의 getPostById 메서드를 호출하여 id에 해당하는 게시물을 조회하고, 이를 BoardDTO 객체로 반환한다.
         BoardDTO edits = boardService.getPostById(id);
         // 존재하지 않는 게시글이면 게시판 목록으로 리다이렉트
 
         if (edits == null) {
             return "redirect:/postList";
         }
+        //boardDTO 뷰에서 참조할 키값
         model.addAttribute("boardDTO", edits); // boardDTO가 실제로는 Post 객체를 의미하는 것으로 가정한다.
         return "/editpost"; // editpost.html로 반환하여 게시글 수정페이지를 표시
     }
 
 
-
+    //POSt요청 -> 서버에 데이터를 보내고 서버에 있는 리소스를 생성하거나 업데이트하는데 사용
     //사용자가 수정 내용 입력하고 저장 버튼 누르면 경로 변수 id와 수정된 게시글 데이터가 함께 전달!!
     @PostMapping("/postlist/editpost/{id}")
     //id는 경로변수, 수정할 게시글의 ID를 나타냄
     //요청 전달된 데이터를 Post 객체로 바인딩하여 updatedPost 변수에 저장
     // 수정할 게시글(ID) 의 내용 넣기
+    //uRl에서 전달된 게시글 ID를 id 변수에 저장한다.  RedirectAttributes 는 일회성 메시지를 전달한느 데 사용
     public String updatePost(@PathVariable("id") int id, @ModelAttribute BoardDTO boardDTO, RedirectAttributes redirectAttributes) {
         //  수정된 내용 게시물(id)을 업데이트
-
+        //id에 해당하는 게시글을  객체의 데이터로 업데이트한다.
         BoardDTO modifyPost = boardService.updatePost(id, boardDTO);
 
         if (modifyPost == null) {
@@ -136,9 +140,27 @@ public class BoardController {
         }
 
         // spring > 페이지의 이름으로 인식함.
+        //수정된 게시글의 ID를 가져와 URL에 추가한다
         return "redirect:/postlist/"+modifyPost.getId();
     }
 
+
+    //[삭제]
+    //게시글 삭제 요청 처리
+    @PostMapping("/postlist/deletepost/{id}")
+    public String deletePost(@PathVariable("id") int id, RedirectAttributes redirectAttributes){
+        String resultMessage = String.valueOf(boardService.deletePost(id)); // 삭제 결과와 메시지를 반환받음
+
+        // 메시지를 Flash Attribute로 추가
+        if (resultMessage.contains("성공")) {
+            redirectAttributes.addFlashAttribute("success", resultMessage);
+        } else {
+            redirectAttributes.addFlashAttribute("error", resultMessage);
+        }
+
+        // 게시물 목록 페이지로 리다이렉트
+        return "redirect:/postlist";
+    }
 
 }
 

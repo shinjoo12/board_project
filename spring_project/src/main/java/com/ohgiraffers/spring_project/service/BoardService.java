@@ -119,6 +119,14 @@ public class BoardService {
 
           return modifyDTO;
     }
+
+    public boolean deletePost(int id) {
+        if (boardRepository.existsById(id)) {
+            boardRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
 }
 
 
